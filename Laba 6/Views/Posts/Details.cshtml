@@ -1,0 +1,128 @@
+﻿@model Laba_6.ViewModels.PostViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Topics" asp-action="Index">Topics</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Topics" asp-action="Details" asp-route-id="@Model.TopicId">@Model.TopicName</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-end mb-3">
+    @if (Model.CanEdit)
+    {
+        <a class="ml-2 btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.PostId">
+            <i class="bi bi-trash"></i>
+            Delete topic
+        </a>
+    }
+</div>
+
+<hr />
+
+@foreach (var reply in Model.Replies)
+{
+    var collapseId = $"collapseReply{reply.Id}";
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <div>
+                <span class="badge badge-dark">@reply.Author.UserName</span> at @reply.CreatedTime
+            </div>
+            <div>
+                @if (reply.CanEdit)
+                {
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#editModal"
+                        onclick="InitEditModal('@reply.Id', '@reply.Text')">
+                    <i class="bi bi-pencil"></i>
+                    Edit
+                </button>
+                }
+            </div>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <span>@reply.Text</span>
+                @if (reply.CreatedTime != reply.EditTime)
+                {
+                    <footer class="blockquote-footer">edited at @reply.EditTime</footer>
+                }
+            </blockquote>
+        </div>
+        <div class="card-footer p-2">
+            <a data-toggle="collapse" href="#@collapseId" role="button" aria-expanded="false">
+                <i class="bi bi-reply"></i>
+                Reply
+            </a>
+        </div>
+    </div>
+
+    <div class="collapse mb-4" id="@collapseId" data-parent="body">
+        <div class="card border-primary">
+            <div class="card-header">
+                <span>Reply</span>
+            </div>
+            <div class="card-body">
+                <form asp-controller="Replies" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="@Model.PostId" type="hidden" />
+                    <div class="form-group">
+                        <label asp-for="Text" class="control-label"></label>
+                        <textarea asp-for="Text" class="form-control"></textarea>
+                        <span asp-validation-for="Text" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <input type="submit" value="Reply" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form asp-controller="Replies" asp-action="Edit" method="post">
+            <input id="editId" type="hidden" name="id" value="0" />
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit reply</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="Text" class="control-label"></label>
+                        <textarea id="editText" asp-for="Text" class="form-control"></textarea>
+                        <span asp-validation-for="Text" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function InitEditModal(Id, Text) {
+        document.getElementById('editId').value = Id;
+        document.getElementById('editText').innerHTML = Text;
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,57 @@
+﻿@model Laba_6.ViewModels.TopicListModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Topics</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-end mb-3">
+    @if (Model.CanEdit)
+    {
+        <a class="btn btn-outline-primary" asp-action="Create">
+            <i class="bi bi-pencil"></i>
+            Create new topic
+        </a>
+    }
+</div>
+
+<table class="table table-striped">
+    <tbody>
+        @foreach (var topic in Model.Topics)
+        {
+            <tr>
+                <td>
+                    <a class="card-body text-decoration-none d-flex justify-content-between" asp-action="Details" asp-route-id="@topic.Id">
+                        <div>
+                            <h3 class="card-title">@topic.Name</h3>
+                            <h6 class="card-subtitle mb-2 text-muted">Created by @topic.Author.UserName at @topic.CreatedTime</h6>
+                        </div>
+                        <div class="text-dark">
+                            <p>@topic.PostCount posts</p>
+                            <p class="mb-0">@topic.ReplyCount replies</p>
+                        </div>
+                        <div class="text-dark">
+                            @if (topic.LastReply != null)
+                            {
+                                <p class="mb-0">Last update</p>
+                                <p class="mb-0">by @topic.LastReply.Author.UserName</p>
+                                <p class="mb-0">at @topic.LastReply.EditTime</p>
+                            }
+                            else
+                            {
+                                <p class="mb-0">Last update</p>
+                                <p class="mb-0">by @topic.Author.UserName</p>
+                                <p class="mb-0">at @topic.CreatedTime</p>
+                            }
+                        </div>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,53 @@
+﻿@model Laba_6.ViewModels.TopicViewModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Topics</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-end mb-3">
+    <a class="btn btn-outline-primary" asp-controller="Posts"
+       asp-action="Create" asp-route-topicId="@Model.Id">
+        <i class="bi bi-pencil"></i>
+        Create new post
+    </a>
+    @if (Model.CanEdit)
+    {
+        <a class="ml-2 btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">
+            <i class="bi bi-trash"></i>
+            Delete topic
+        </a>
+    }
+</div>
+
+<table class="table table-striped">
+    <tbody>
+        @foreach (var post in Model.Posts)
+        {
+            <tr>
+                <td>
+                    <a class="card-body text-decoration-none d-flex justify-content-between" asp-controller="Posts" asp-action="Details" asp-route-id="@post.Id">
+                        <div>
+                            <h3 class="card-title">@post.Title</h3>
+                            <h6 class="card-subtitle mb-2 text-muted">Created by @post.Author.UserName at @post.CreatedTime</h6>
+                        </div>
+                        <div class="text-dark">
+                            <p>@post.ReplyCount replies</p>
+                        </div>
+                        <div class="text-dark">
+                            <p class="mb-0">Last update</p>
+                            <p class="mb-0">by @post.LastReply.Author.UserName</p>
+                            <p class="mb-0">at @post.LastReply.EditTime</p>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

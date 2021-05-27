@@ -1,0 +1,44 @@
+﻿@model Laba_6.ViewModels.PostCreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Topics" asp-action="Index">Topics</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Topics" asp-action="Details" asp-route-id="@Model.TopicId">@Model.TopicName</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create new post</li>
+    </ol>
+</nav>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <input type="hidden" asp-for="TopicId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Text" class="control-label"></label>
+                <textarea asp-for="Text" class="form-control"></textarea>
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
