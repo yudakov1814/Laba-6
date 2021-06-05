@@ -1,0 +1,26 @@
+﻿@model Laba_6.ViewModels.ImageFileViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @foreach (var f in Model.Parents)
+        {
+            <li class="breadcrumb-item"><a asp-controller="Folders" asp-action="Details" asp-route-id="@f.Id">@f.Name</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-end mb-3">
+    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">
+        <i class="bi bi-trash"></i>
+        Delete image
+    </a>
+</div>
+
+<div class="card">
+    <img class="card-img-top" src="@Model.Path" alt="image">
+</div>

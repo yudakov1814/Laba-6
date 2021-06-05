@@ -1,0 +1,136 @@
+﻿@model Laba_6.ViewModels.FolderViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @foreach (var f in Model.Parents)
+        {
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@f.Id">@f.Name</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="d-flex mb-3">
+    <a class="btn btn-outline-primary" href="#CreateFolderCollapse" data-toggle="collapse" role="button">
+        <i class="bi bi-folder-plus"></i>
+        Create new folder
+    </a>
+    @if (Model.Id != 1)
+    {
+        <a class="ml-2 btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">
+            <i class="bi bi-pencil"></i>
+            Edit folder
+        </a>
+    }
+    <a class="ml-2 btn btn-outline-success" href="#AddImageCollapse" data-toggle="collapse" role="button">
+        <i class="bi bi-file-earmark-plus"></i>
+        Add image
+    </a>
+    @if (Model.Id != 1 && !Model.Images.Any() && !Model.SubFolders.Any())
+    {
+        <a class="ml-2 btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">
+            <i class="bi bi-trash"></i>
+            Delete folder
+        </a>
+    }
+</div>
+
+<div class="collapse mb-3" id="CreateFolderCollapse" data-parent="body">
+    <div class="card border-primary">
+        <div class="card-header">
+            <span>Create new folder</span>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Folders" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <input name="ParentId" value="@Model.Id" type="hidden" />
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input type="text" name="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-0">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="collapse mb-3" id="AddImageCollapse" data-parent="body">
+    <div class="card border-primary">
+        <div class="card-header">
+            <span>Add new image</span>
+        </div>
+        <div class="card-body">
+            <form asp-controller="ImageFiles" asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input name="folderId" value="@Model.Id" type="hidden" />
+                <div class="form-group">
+                    <input asp-for="Image" class="form-control-file" accept="image/*" onchange="validateFileType(this)"/>
+                    <span id="FileValidationSpan" asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-0">
+                    <input type="submit" value="Add" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <tbody>
+        @if (Model.ParentId != null)
+        {
+            <tr>
+                <td>
+                    <a class="card-body" asp-action="Details" asp-route-id="@Model.ParentId">
+                        <i class="bi bi-folder2-open"></i>
+                        ..
+                    </a>
+                </td>
+            </tr>
+        }
+        @foreach (var f in Model.SubFolders)
+        {
+            <tr>
+                <td>
+                    <a class="card-body" asp-action="Details" asp-route-id="@f.Id">
+                        <i class="bi bi-folder"></i>
+                        @f.Name
+                    </a>
+                </td>
+            </tr>
+        }
+        @foreach (var f in Model.Images)
+        {
+            <tr>
+                <td>
+                    <a class="card-body" asp-controller="ImageFiles" asp-action="Details" asp-route-id="@f.Id">
+                        <i class="bi bi-file-image"></i>
+                        @f.Name
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function validateFileType(file) {
+        var fileName = file.value;
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png")) {
+            document.getElementById("FileValidationSpan").innerHTML = "Only jpg/jpeg and png files are allowed!";
+        }
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

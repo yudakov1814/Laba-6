@@ -16,5 +16,7 @@ namespace Laba_6.Data
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Reply> Replies { get; set; }
+        public DbSet<Folder> Folders { get; set; }
+        public DbSet<ImageFile> ImageFiles { get; set; }
     }
 }

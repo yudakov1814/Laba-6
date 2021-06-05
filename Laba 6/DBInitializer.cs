@@ -12,6 +12,18 @@ namespace Laba_6
     {
         public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
+            if (!context.Folders.Any())
+            {
+                var folder = new Folder
+                {
+                    Name = "Root",
+                    ParentId = null
+                };
+
+                context.Add(folder);
+                await context.SaveChangesAsync();
+            }
+
             if (await roleManager.FindByNameAsync("admin") == null &&
                 await roleManager.FindByNameAsync("user") == null)
             {
